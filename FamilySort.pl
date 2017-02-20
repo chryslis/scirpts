@@ -156,5 +156,6 @@ foreach my $key(sort keys %results){
 
 print "Done!\n";
 print "$sum\n";
+
 close(OUT);
 close(READ);
