@@ -1,0 +1,16 @@
+###Family Sort###
+
+Early and unefficient version of a (Super-Family)-Sort Script for Enhancers.
+Based of Dfamm.database.Version:
+
+DFAM : Multiple alignment and profile HMMs of repetitive DNA                                            
+                        RELEASE 1.2
+
+Human Genome Assembly: hg19
+
+Familysort.pl <ARG1> <ARG2>
+
+ARG1 = /path/to/dfam.hmm
+ARG2 = /path/to/*bedfile
+
+
