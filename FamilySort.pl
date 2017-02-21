@@ -112,8 +112,12 @@ while (<READ>) {
 
 }
 
+my $resName = $ARGV[2];
 my $localTime = gmtime();
-my $result = "result: ".$localTime.".txt";
+$localTime =~ s/ /-/g;
+
+
+my $result = $resName.$localTime.".txt";
 
 open(OUT,">",$result) || die "Could not create file $! \n!";
 

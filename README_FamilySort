@@ -8,9 +8,22 @@ DFAM : Multiple alignment and profile HMMs of repetitive DNA
 
 Human Genome Assembly: hg19
 
+FamilySort - Version 0.1
+
+Familysort.pl <ARG1> <ARG2> <ARG3>
+
+ARG1 = /path/to/dfam.hmm
+ARG2 = /path/to/*bedfile
+
+FamilySort - Version 0.2
+
+*Added third Argument for custom output name
 Familysort.pl <ARG1> <ARG2>
 
 ARG1 = /path/to/dfam.hmm
 ARG2 = /path/to/*bedfile
+ARG3 = "NameOfResultFile"
+
+
 
 
