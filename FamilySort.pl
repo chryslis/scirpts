@@ -14,9 +14,9 @@ open(READ,$dataBase) || die "Could not open $dataBase: $!";
 
 #Stuff
 my $name;
-my $type;
-my $class;
 my $superfamily;
+my $localTime = gmtime();
+$localTime =~ s/ /-/g;
 
 
 #Loop to grab the descriptors of the repeats
@@ -25,21 +25,6 @@ while (<READ>) {
 	
 	if($_ =~ /^NAME\s+(\S+)/gi){
 		$name = $1;
-	}
-
-	
-	if($_ =~ /^CT\s+(Type.+)/g){
-		
-		my @temp = split /\;/,$1;
-		$type = $temp[1];
-		$type =~ s/^\s+//;
-	}
-
-	if($_ =~ /^CT\s+(Class.+)/g){
-		
-		my @temp = split /\;/,$1;
-		$class = $temp[1];
-		$class =~ s/^\s+//;
 	}
 
 	my $switch = 0;
@@ -74,92 +59,53 @@ while (<READ>) {
 
 my $end_run = time();
 
-#open(OUT,">","dumper.txt") || die "Could not create file $! \n!";
-#print OUT Dumper \%repeats;
-
 close(READ);
 
 my $run_time = $end_run-$start_run;
 print "Database Indexing Job took $run_time seconds\n";
-print "Accessing *.bed file to sort Repeats \n";
+print "Accessing *.bed file to sort repeats \n";
 
 $start_run = time();
 
 #Input is a *.bed file 
 
 my $repeatIndex = $ARGV[1];
-#my $repeatIndex = "hg19RepeatsOverlappNoDup";
+my $outPutName = $ARGV[2];
 my %Index;
+my $counter = 0;
+
+
 
 open(READ,$repeatIndex) || die "Could not read *.bed file: $repeatIndex. $!";
+open(OUT,">",$outPutName.$localTime."SortOut.bed") || die "Could not create file! $!";
 
-while (<READ>) {
+
+while (<READ>){
 
 	chomp;
 	my @temp = split(/\t/,$_);
-	my $featureLength = $temp[2] - $temp[1];
 
-	if (exists $Index{$temp[3]}) {
+	foreach my $keysSC( keys %repeats){
 
-		$Index{$temp[3]} += $featureLength;
-	
-	}else{
+		foreach my $keysDatabse (%{$repeats{$keysSC}}){
 
-		$Index{$temp[3]} = $featureLength; 
+			if ($keysDatabse eq $temp[3]) {
 
-	}
-	
+				print "Printing line $counter \n";
 
-}
+				print OUT join("\t",@temp)."\t".$keysSC."\n";				
 
-my $resName = $ARGV[2];
-my $localTime = gmtime();
-$localTime =~ s/ /-/g;
-
-
-my $result = $resName.$localTime.".txt";
-
-open(OUT,">",$result) || die "Could not create file $! \n!";
-
-
-my %results;
-
-foreach my $superFam(keys %repeats){
-	
-	foreach my $repsDB (keys %{$repeats{$superFam}} ){
-
-		foreach my $foundRep(keys %Index){
-
-			if ($foundRep eq $repsDB) {
-				
-				if (exists $results{$superFam}) {
-					
-					$results{$superFam} += $Index{$foundRep};
-
-				}else{
-
-					$results{$superFam} = $Index{$foundRep};
-				}
 			}
 		}
 	}
+
+	$counter ++;
 }
+
 
 $end_run = time();
-$run_time = $end_run-$start_run;
+$run_time =$end_run-$start_run;
 
-print "Family sorting job did take $run_time seconds\n";
-
-
-my $sum = 0;
-foreach my $key(sort keys %results){
-	print OUT "$key\t$results{$key}\n"; 
-	$sum += $results{$key};
-
-}
-
-print "Done!\n";
-print "$sum\n";
-
+print "Done exit status 0\n";
+print "Runtime for family sorting job was: $run_time\n";
 close(OUT);
-close(READ);
