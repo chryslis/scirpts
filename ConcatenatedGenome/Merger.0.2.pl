@@ -1,4 +1,4 @@
-#!usr/bin/perl
+#!/usr/bin/perl
 
 use strict;
 use warnings;
@@ -51,9 +51,7 @@ while (<FH>) {
 		my $concat = $newsampleID;
 		$concat =~ s/ID\:/\|/g;
 		$sample[6] = $sample[6].$concat
-
-
-
+		
 	}elsif ( $sample[1] <= $newsample[1] ){
 
 		my $concat = $newsampleID;

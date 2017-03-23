@@ -1,4 +1,4 @@
-#!usr/bin/perl
+#!/usr/bin/perl 
 
 use strict;
 use warnings;
@@ -14,7 +14,10 @@ my $outBedFile = $file.".indexed.".$rand;
 my $jobID = $rand;
 my $report = "Index-Report.".$rand;
 my $timestamp = localtime();
+my $oldcurrent = 0;
+my $current = 0;
 
+print "Starting up...\n";
 
 open(READ,$file) || die "Could not open the file:$file because:$!\n";
 open(OUTBED,">",$outBedFile) || die "Could not create $outBedFile:$!\n";
@@ -23,6 +26,7 @@ open(OUTJOB,">",$report) || die "Could not create $report:$!\n";
 #ID for features
 my $idNum = 0;
 
+print "Processing...\n";
 while (<READ>) {
 	chomp;
 	my $line = $_;
@@ -35,7 +39,7 @@ while (<READ>) {
 	#Interface can be implemented.
 	if ($temp[12] eq "Low_complexity" || $temp[12] eq "Simple_repeat" || $temp[12] eq "Satellite" ) {
 		next;
-	}elsif($temp[5] =~ /chr.+_/g ) { #Still a test
+	}elsif($temp[5] =~ /chr.+_/g ) {
 		next;
 	}elsif($temp[5] =~ /chrM/g ) {
 		next;
@@ -46,16 +50,29 @@ while (<READ>) {
 		$idNum++;
 	}
 
-	my $current = time();
-	$current = $current - $start;
-	print "Current runtime: $current seconds\n";
+	$oldcurrent = $current;
+	$current = time();
+	$current = int($current) - int($start);
+
+	unless ($current == $oldcurrent){
+		print "Current runtime: $current seconds";
+		
+	}
+
+	print "\r";
 }
 
+print "\n";
 my $end = time ();
 my $jobTime = $end-$start;
 
+print "Done, JobID:$rand\n";
 print OUTJOB "Timestamp:$timestamp\nJob took $jobTime seconds\nJobID:$rand\n";
 
 close(OUTJOB);
-close(OUTJOB);
+close(OUTBED);
 close(READ);
+
+my $exit_code;
+
+exit $jobID;

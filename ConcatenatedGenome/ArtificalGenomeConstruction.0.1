@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#Change this to scripts directory when exiting test-Phase
+SORTER=/home/chrys/Documents/test/artificalGenome.0.2.pl
+MERGER=/home/chrys/Documents/test/Merger.0.2.pl
+CONCAT=/home/chrys/Documents/test/ConcatGenome.0.2.pl
+
+#Input File
+INPUT=$@;
+echo "You passed me ${INPUT}"
+
+#Create Backup copy of Input
+
+cat ${INPUT} > ${INPUT}.Backup
+
+#Remove first line of RepeatMaskerTrack
+#sed -i 1d 
+
+#Sort file by chr and start stop
+echo "Sorting..."
+sort -k6,6 -k7,7n ${INPUT} > ${INPUT}.sorted
+
+echo "Executing indexing..."
+
+$SORTER "${INPUT}.sorted" exit
+
+echo "Job ID returned from indexing: $"
+
+${INPUT}.sorted.indexed
+
+echo "Executing merging..."
+$MERGER
+
+echo "Executing concatination..."
+$CONCAT
