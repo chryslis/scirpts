@@ -39,6 +39,8 @@ while (<READ>) {
 	#Interface can be implemented.
 	if ($temp[12] eq "Low_complexity" || $temp[12] eq "Simple_repeat" || $temp[12] eq "Satellite" ) {
 		next;
+	}elsif($temp[11] eq "Satellite"){
+		next;
 	}elsif($temp[5] =~ /chr.+_/g ) {
 		next;
 	}elsif($temp[5] =~ /chrM/g ) {

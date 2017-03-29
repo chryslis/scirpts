@@ -61,6 +61,8 @@ while (<FH>) {
 
 	}elsif ($newsample[2] <= $sample[2] ){
 
+
+		print "This should not happend!";
 		$sample[1] = $newsample[1];
 
 	}else{
