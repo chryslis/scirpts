@@ -67,7 +67,6 @@ while (<READ>) {
 print "\n";
 my $end = time ();
 my $jobTime = $end-$start;
-
 print "Done, JobID:$rand\n";
 print OUTJOB "Timestamp:$timestamp\nJob took $jobTime seconds\nJobID:$rand\n";
 
