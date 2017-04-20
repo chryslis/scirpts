@@ -44,10 +44,10 @@ while (<READ>) {
 	}elsif($temp[5] =~ /chr.+_/g ) {
 		next;
 	}elsif($temp[5] =~ /chrM/g ) {
-		next;
+		nex
 	}else{
 		#Generating intermediate file for storage of sequences.
-		my $localTemp = $temp[5]."\t".$temp[6]."\t".$temp[7]."\t".$temp[10]."\t".$temp[11]."\t".$temp[11]."\t"."ID:$idNum";
+		my $localTemp = $temp[5]."\t".$temp[6]."\t".$temp[7]."\t".$temp[10]."\t".$temp[11]."\t".$temp[12]."\t"."ID:$idNum";
 		print OUTBED "$localTemp\n";
 		$idNum++;
 	}
