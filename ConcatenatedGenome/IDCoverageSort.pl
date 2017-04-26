@@ -33,7 +33,7 @@ while (<READ>) {
 
 	#In the file, the ordering is with 1 based bed format: chr/start/stop/Sub-Families/Class/Super-Families.
 	#For changing the respective family -> use either 3/4/5 as indicies.
-	my $Family = $temp[3];
+	my $Family = $temp[4];
 
 	#the ID hash will containt the ID Number and the respective family this number belongs to.
 	$IDhash{$primaryTemp[1]} = $Family;
@@ -48,8 +48,6 @@ my $annotationFile = "4169.Coverage.bed";
 
 open(READ2,$annotationFile) || die "Could not open $annotationFile!: $!";
 
-my $outPut = "4169.IDCoverage.FULL.bed";
-open(OUTPUT,">",$outPut) || die "Could not create output file $outPut!: $!";
 
 print "Converting IDs to families...\n";
 
@@ -89,8 +87,6 @@ while (<READ2>) {
 
 	foreach my $elements(@subID){
 
-		
-
 		if (exists $IDhash{$elements}) {
 
 			my $familyName = $IDhash{$elements};
@@ -121,9 +117,36 @@ while (<READ2>) {
 	}
 }
 
-open (OUTPUT2,">","4169.IDReadCount") || die "Could not create second output!";
+my $outName = <STDIN>;
+print "Output File name:\n";
+chomp $outName;
 
-print "Processing Output...\n";
+
+my $outPut = "4169".$outName."IDCoverage.FULL.bed";
+
+open(OUTPUT1,">",$outPut1) || die "Could not create output file $outPut1!: $!";
+open (OUTPUT2,">",$outPut2) || die "Could not create second $outPut2!: $!";
+
+
+
+
+print "Processing Output1...\n";
+my $i = 0;
+
+foreach my $keys(sort keys %outHash){
+	print OUTPUT2 "$keys\t";
+
+	for $i (0 .. $#{ $outHash{ $keys } } ) {
+		print OUTPUT2  "$outHash{$keys}[$i]\t";
+	}
+	print OUTPUT2  "\n";
+}
+
+
+
+
+
+sub printCol{
 
 my @header = sort keys %outHash;
 
@@ -133,6 +156,8 @@ while ( map {@$_} values %outHash ) {
    push( @row, shift @{ $outHash{$_} } // '' ) for @header;
    print OUTPUT join (",", @row ), "\n";
 }
+
+print "Processing Output2...\n";
 
 close(OUTPUT);
 
@@ -145,33 +170,10 @@ while ( map {@$_} values %outHash2 ) {
    print OUTPUT2 join (",", @row ), "\n";
 }
 
+}
 
 
 print "Done\n";
 my $stop = time();
 my $jobTime = $stop - $start;
 print "$jobTime\n";
-close(READ2);
-close(OUTPUT);
-
-my $i = 0;
-my $j = 0;
-my @outMatrix;
-
-
-
-
-sub test {
-for my $keys(sort keys %outHash){
-
-	$outMatrix[$i] = $keys;
-
-	for (my $t = 0; $t < scalar @{$outHash{$keys}}; $t++){
-		
-		$outMatrix[$i][$t] = $outHash{$keys}[$t];
-
-	}
-
-	$i++;
-}
-}
