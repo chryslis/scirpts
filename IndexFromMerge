@@ -33,6 +33,8 @@ while (<READ>) {
 		$start = 0;
 	}
 	
+	
+
 	my $featureLength = $line[2]-$line[1];
 
 	$start = $start + $addLength;

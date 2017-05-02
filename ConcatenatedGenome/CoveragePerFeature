@@ -1,0 +1,12 @@
+#!/bin/bash
+#bedtools coverage -a test.bamTobed.bed -b $INDEX > test.bed
+
+INDEX=/home/chrys/Documents/thesis/data/analysis/artificialGenome/4169.BedIndexFromMerge.bed
+
+#Produce bam to bed => Read.file.bam > Read.file.bed
+#sort if necessary
+
+READS=/media/chrys/HDDUbuntu/DataStorage/BedCov/Reads.bamTobed.sorted.bed
+
+bedtools coverage -d -sorted -a $INDEX -b $READS > 4169.Covergae.bed
+bedtools intersect -wo -a Reads.bamToBed.sorted -b $INDEX > 4169.Annotation.bed
