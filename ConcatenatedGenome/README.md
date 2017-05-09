@@ -1,4 +1,4 @@
-State of the Pipeline on 9.5.2017
+State of the Pipeline on 9.5.2017,09:01
 
 The pipeline is built into serveral pieces.
 The first one part is the construction of the concatenated genome, which includes sorting and cleaning.
@@ -40,7 +40,7 @@ Ouputs: Index file, which stores the IDs and the positions of the features in th
 
 
 
-3. Get fasta sequences for the features.
+3.Get fasta sequences for the features.
 
 Script: BedtoolsGetfasta
 Input: Outputfile from #2. Holds the original genomic locations.
@@ -59,7 +59,7 @@ Output: Genome file with the structure NNNNNNNNNNAGCTGCGCGCGCNNNNNNNNN
 
 
 
-5. Read Aligment
+5.Read Aligment
 
 If only *.sra files are availble:
 fastq-dump *.sra
@@ -71,7 +71,7 @@ bwa mem -a -t 3  InputFile
 
 
 
-6. Create bed file
+6.Create bed file
 
 Use bedtools to create a bed file from bam.
 Command should be bamtobed.
@@ -85,7 +85,7 @@ This will ignore any fractional overlapp if not specified.
 
 
 
-7. ID Expanding and Sorting - IDAnnotationSort/IDCoverageSort
+7.ID Expanding and Sorting - IDAnnotationSort/IDCoverageSort
 Script: IDAnnotationSort.0.1.pl / IDCoverageSort.0.1.pl
 
 IDAnnotationSort
@@ -98,7 +98,7 @@ Get the file from bedtools coverage
 
 
 
-7.1 Calculate Read Enrichment per Feature
+7.1.Calculate Read Enrichment per Feature
 
 Script: Enrichment.0.2.pl
 Input: IDAnnotationSort Output
@@ -109,7 +109,7 @@ Output: Matrix feature x reads + file which stores the header if so wished.
 
 
 
-7.2 Calculate Coverage per Nucleotide
+7.2.Calculate Coverage per Nucleotide
 
 INDEX=/home/chrys/Documents/thesis/data/analysis/artificialGenome/4169.BedIndexFromMerge.bed
 Attention! File is gets very large.
