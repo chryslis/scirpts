@@ -53,10 +53,6 @@ while (<READ>) {
 	    $sequences{$chrom}{$start} .= $seqData;
 
 	    $counter ++;
-
-	    #if ($counter == 50) {
-	    #	last;
-	    #}
 	
 	}
 }

@@ -7,7 +7,7 @@ use Data::Dumper qw(Dumper);
 
 my $start = time();
 my $current = 0;
-my $InPut = "4169.IDAnnotation.FULL.bed";
+my $InPut = "4169.Class.IDAnnotation.FULL.bed";
 
 
 open(READ,$InPut) || die "Could not read $InPut: $!";
@@ -55,8 +55,8 @@ my @uniqFams = uniq sort @famsList;
 my $i = 0;
 my $j = 0;
 
-open(OUTPUTFILE,">","4169.ReadEnrichment.FULL") || die "Could not open Output File: $!";
-open(OUTPUTHEADER,">","4169.Header") || die "Could not open header file: $!";
+open(OUTPUTFILE,">","4169.SuperFamily.Shuffle.FULL") || die "Could not open Output File: $!";
+open(OUTPUTHEADER,">","4169.SuperFamily.Shuffle.Header") || die "Could not open header file: $!";
 
 
 my $header = join("\t",@uniqFams);

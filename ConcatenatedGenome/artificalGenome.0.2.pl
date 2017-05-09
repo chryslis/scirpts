@@ -6,6 +6,7 @@ use Data::Dumper qw(Dumper);
 
 #requieres input to be sorted by chromosome and length
 #use sort -k1,1 -k2,2n for bed files
+#
 
 my $start = time();
 my $file = $ARGV[0];
@@ -37,7 +38,7 @@ while (<READ>) {
 	#Make exclusion list accessible for user later
 	#This is really crude and servers only as a placeholder until a more userfriendly
 	#Interface can be implemented.
-	if ($temp[12] eq "Low_complexity" || $temp[12] eq "Simple_repeat" || $temp[12] eq "Satellite" ) {
+	if ($temp[12] eq "Low_complexity" || $temp[12] eq "Simple_repeat" || $temp[12] eq "Satellite" || $temp[12] eq "tRNA") {
 		next;
 	}elsif($temp[11] eq "Satellite"){
 		next;
