@@ -2,6 +2,7 @@
 
 use warnings;
 use strict;
+use List::MoreUtils qw(uniq);
 use Data::Dumper qw(Dumper);
 
 my $start = time();
@@ -12,17 +13,21 @@ my $originalIndex = "/home/chrys/Documents/thesis/data/analysis/artificialGenome
 
 open(READ,$originalIndex) || die "Could not open $originalIndex!: $!";
 
-#Storing IDs -> Family since the input file will contain multiple IDs seperated by "|""
-print "Preparing Inputs...\n";
-
-my %IDhash;
-my %outHash;
-
 print "Please pick sort type:\n3 - Species\n4 - Class\n5 - SuperFamily\n";
 my $sortType = <STDIN>;
 chomp $sortType;
 
+if ($sortType != 3 || 4 || 5 ) {
 
+	print "No sort type picked, defaulting to 5 - SuperFamily"
+	$sortType = 5;
+}
+
+
+#Storing IDs -> Family since the input file will contain multiple IDs seperated by "|""
+print "Preparing Inputs...\n";
+
+my %IDhash;
 
 #Read the Index file created from Merger Script
 while (<READ>) {
@@ -36,7 +41,7 @@ while (<READ>) {
 	my $ID = $temp[6];
 	my @primaryTemp = split(/\:/,$ID);
 
-	#In the file, the ordering is with 1 based bed format: chr/start/stop/Sub-Families/Class/Super-Families.
+	#In the file, the ordering is with 1 based bed format: chr/start/stop/Species/Class/Super-Families.
 	#For changing the respective family -> use either 3/4/5 as indicies.
 	my $Family = $temp[$sortType];
 
@@ -47,19 +52,21 @@ while (<READ>) {
 close(READ);
 #Get Annotation File from output of Bedtools Intersect between Reads and Index created from Index Script
 #Contains all the reads in full length which overlapp a feature (ID)
-my $annotationFile = "4169.Coverage.bed";
-
-print "Output File name:\n";
-my $outName = <STDIN>;
-chomp $outName;
-close($outName);
-
-my $outFileName = "4169.".$outName.".Coverage.Expanded.bed";
+my $annotationFile = "4169.Annotation.bed";
+#my $annotationFile = $ARGV[0];
 
 open(READ2,$annotationFile) || die "Could not open $annotationFile!: $!";
-open(OUTFILE,">",$outFileName) || die "Could not open outfile!: $!";
 
-print "Converting IDs to families...\n";
+my $outPut = "4169.Class.IDAnnotation.FULL.bed";
+open(OUTPUT,">",$outPut) || die "Could not create output file $outPut!: $!";
+
+print "Converting IDs to features...\n";
+
+#Matrix for storing the lines
+my $lineCount = 0;
+
+#Stores each line,discarded for memory purposes.
+my @storageMatrix;
 
 #Reading annotation file
 while (<READ2>) {
@@ -68,7 +75,7 @@ while (<READ2>) {
 	#Split line by tab
 	my @temp = split("\t",$line);
 	#The IDs of the the concatenated genome are stored in field 9 (0 based)
-	my $ID = $temp[3];
+	my $ID = $temp[9];
 	#If more then one ID are in the same line -> Split it up
 	my @subID;
 
@@ -95,103 +102,25 @@ while (<READ2>) {
 
 	}
 
-	#Test area
-	foreach my $elements(@subID){
-
-		if (exists $IDhash{$elements}) {
-
-			print OUTFILE "$temp[0]\t$temp[1]\t$temp[2]\t$IDhash{$elements}\t$temp[7]\tID:$elements\n";
-		}
-	}
+	print "Processing Output..\n";
 
 	foreach my $elements(@subID){
 
 		if (exists $IDhash{$elements}) {
-
-			my $familyName = $IDhash{$elements};
-
-			if (exists $outHash{$familyName}){
-
-				push( @{$outHash{$familyName}},$temp[7] );
-
-			}else{
-
-				$outHash{$familyName} = [$temp[7]];
-
-			}
+			#Matrix contains: LineNumber/Read/Family
+			#$storageMatrix[$lineCount] = [ $temp[3], $IDhash{$elements} ];
+			#This output gets created as sanity check, maybe turned off, saves time.
+			#$lineCount++;
+			print OUTPUT "$temp[0]\t$temp[1]\t$temp[2]\t$temp[3]\t$IDhash{$elements}\tID:$elements\n";
 		}
 	}
 }
-
-
-
-my $outPut = "4169.".$outName.".IDCoverage.FULL.bed";
-
-open(OUTPUT,">",$outPut) || die "Could not create output file $outPut!: $!";
-
-
-print "Processing Output...\n";
-
-print "Choose type for output printing:\n0 - Row Wise\n1 - Colwise\nDefault - Row Wise\n";
-my $pickType = <STDIN>;
-chomp $pickType;
-
-if ($pickType ne "") {
-
-	if ($pickType == 0) {
-
-		printRow(%outHash);
-
-	}elsif($pickType == 1){
-
-		printCol(%outHash);
-
-	}
-
-}else{
-
-	printRow(%outHash);
-
-}
-
-print "Printing Output...\n";
-
-
-sub printRow {
-
-	my %hash1 = @_;
-
-	my $i = 0;
-
-	foreach my $keys(sort keys %hash1){
-		print OUTPUT "$keys";
-
-		for $i (0 .. $#{ $hash1{ $keys } } ) {
-			print OUTPUT  ",$hash1{$keys}[$i]";
-		}
-
-		print OUTPUT  "\n";
-	}
-}
-
-
-sub printCol{
-
-	my %hash2 = @_;
-
-	my @header = sort keys %hash2;
-
-	print OUTPUT join (",", @header), "\n";
-	while ( map {@$_} values %hash2 ) {
-   	my @row;
-  	push( @row, shift @{ $hash2{$_} } // '' ) for @header;
-   	print OUTPUT join (",", @row ), "\n";
-   }
-}
-
-close(OUTPUT);
 
 print "Done\n";
+close(READ2);
+close(OUTPUT);
+
+print "\n";
 my $stop = time();
 my $jobTime = $stop - $start;
 print "$jobTime\n";

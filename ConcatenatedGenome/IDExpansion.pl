@@ -44,17 +44,14 @@ while (<READ>) {
 	$IDhash{$primaryTemp[1]} = $Family;
 }
 
-close(READ);
-#Get Annotation File from output of Bedtools Intersect between Reads and Index created from Index Script
-#Contains all the reads in full length which overlapp a feature (ID)
-my $annotationFile = "4169.Coverage.bed";
+my $annotationFile = "/media/chrys/HDDUbuntu/DataStorage/BedCov/4169.AvgCovPerNu";
 
 print "Output File name:\n";
 my $outName = <STDIN>;
 chomp $outName;
-close($outName);
 
-my $outFileName = "4169.".$outName.".Coverage.Expanded.bed";
+
+my $outFileName = "/media/chrys/HDDUbuntu/DataStorage/BedCov/4169.".$outName.".".$sortType.".Expanded.bed";
 
 open(READ2,$annotationFile) || die "Could not open $annotationFile!: $!";
 open(OUTFILE,">",$outFileName) || die "Could not open outfile!: $!";
@@ -68,7 +65,7 @@ while (<READ2>) {
 	#Split line by tab
 	my @temp = split("\t",$line);
 	#The IDs of the the concatenated genome are stored in field 9 (0 based)
-	my $ID = $temp[3];
+	my $ID = $temp[0];
 	#If more then one ID are in the same line -> Split it up
 	my @subID;
 
@@ -100,98 +97,7 @@ while (<READ2>) {
 
 		if (exists $IDhash{$elements}) {
 
-			print OUTFILE "$temp[0]\t$temp[1]\t$temp[2]\t$IDhash{$elements}\t$temp[7]\tID:$elements\n";
-		}
-	}
-
-	foreach my $elements(@subID){
-
-		if (exists $IDhash{$elements}) {
-
-			my $familyName = $IDhash{$elements};
-
-			if (exists $outHash{$familyName}){
-
-				push( @{$outHash{$familyName}},$temp[7] );
-
-			}else{
-
-				$outHash{$familyName} = [$temp[7]];
-
-			}
+			print OUTFILE "$temp[0]\tID:$elements\t$temp[1]\t$temp[2]\t$temp[3]\t$IDhash{$elements}\n";
 		}
 	}
 }
-
-
-
-my $outPut = "4169.".$outName.".IDCoverage.FULL.bed";
-
-open(OUTPUT,">",$outPut) || die "Could not create output file $outPut!: $!";
-
-
-print "Processing Output...\n";
-
-print "Choose type for output printing:\n0 - Row Wise\n1 - Colwise\nDefault - Row Wise\n";
-my $pickType = <STDIN>;
-chomp $pickType;
-
-if ($pickType ne "") {
-
-	if ($pickType == 0) {
-
-		printRow(%outHash);
-
-	}elsif($pickType == 1){
-
-		printCol(%outHash);
-
-	}
-
-}else{
-
-	printRow(%outHash);
-
-}
-
-print "Printing Output...\n";
-
-
-sub printRow {
-
-	my %hash1 = @_;
-
-	my $i = 0;
-
-	foreach my $keys(sort keys %hash1){
-		print OUTPUT "$keys";
-
-		for $i (0 .. $#{ $hash1{ $keys } } ) {
-			print OUTPUT  ",$hash1{$keys}[$i]";
-		}
-
-		print OUTPUT  "\n";
-	}
-}
-
-
-sub printCol{
-
-	my %hash2 = @_;
-
-	my @header = sort keys %hash2;
-
-	print OUTPUT join (",", @header), "\n";
-	while ( map {@$_} values %hash2 ) {
-   	my @row;
-  	push( @row, shift @{ $hash2{$_} } // '' ) for @header;
-   	print OUTPUT join (",", @row ), "\n";
-   }
-}
-
-close(OUTPUT);
-
-print "Done\n";
-my $stop = time();
-my $jobTime = $stop - $start;
-print "$jobTime\n";

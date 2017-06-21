@@ -70,8 +70,6 @@ while (<READ>) {
 	}
 
 	$oldID = $ID;
-
-	#$calcHash{$ID}{$NuPos} = $depth;
 }
 
 print "\nDone!\n";

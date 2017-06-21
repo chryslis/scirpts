@@ -42,6 +42,7 @@ close(READ);
 #Get Annotation File from output of Bedtools Intersect between Reads and Index created from Index Script
 #Contains all the reads in full length which overlapp a feature (ID)
 my $annotationFile = "4169.Annotation.bed";
+#my $annotationFile = $ARGV[0];
 
 open(READ2,$annotationFile) || die "Could not open $annotationFile!: $!";
 
